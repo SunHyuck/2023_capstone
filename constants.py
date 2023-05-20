@@ -20,8 +20,6 @@ INFERENCE_RESULT_PUBLISHER_TOPIC = "inference_results"
 SENSOR_FUSION_PKG_NS = "/sensor_fusion_pkg"
 SENSOR_FUSION_TOPIC = f"{SENSOR_FUSION_PKG_NS}/sensor_msg"
 
-IMAGE_PUBLISHER_TOPIC = "sensor_image"
-
 COCO_LABELS = {
     1: "person",
     2: "bicycle",
