@@ -78,6 +78,10 @@ class ObjectDetectionNode(Node):
             InferResultsArray, constants.INFERENCE_RESULT_PUBLISHER_TOPIC, qos_profile
         )
 
+        self.image_publisher = self.create_publisher(
+            EvoSensorMsg, constants.IMAGE_PUBLISHER_TOPIC, qos_profile
+        )
+
         self.bridge = CvBridge()
 
         # Launching a separate thread to run inference.
@@ -270,7 +274,7 @@ class ObjectDetectionNode(Node):
 
                 # Publish inference results.
                 self.inference_result_publisher.publish(infer_results_array)
-
+                self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
                     f"Total execution time = {time.time() - start_time}"
                 )
