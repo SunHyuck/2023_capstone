@@ -304,7 +304,10 @@ class TrafficNavigationNode(Node):
     def plan_action(self, delta_x):
         if not self.is_driving:
             # No Action
-            return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+
+            ################################## [1]로 수정해야함, 원활한 테스트를 위해 [6]으로 수정함
+
+            return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
 
         # For now only drive straight ahead.
         return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
@@ -336,7 +339,8 @@ class TrafficNavigationNode(Node):
                 self.get_logger().info(f"Action -> {action}")
 
                 # Publish blind action
-                self.action_publisher.publish(msg)
+                if not self.is_driving
+                    self.action_publisher.publish(msg)
 
                 time.sleep(constants.DEFAULT_SLEEP)
 
