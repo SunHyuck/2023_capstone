@@ -123,6 +123,8 @@ class TrafficNavigationNode(Node):
         self.led_thread.start()
         self.led_thread_initialized = True
 
+        self.action_category
+
         self.get_logger().info("Waiting for input...")
 
     def wait_for_thread(self):
@@ -254,27 +256,29 @@ class TrafficNavigationNode(Node):
                 # If no object, clear the LED and continue driving.
                 if not closest_object:
                     self.update_led()
-                    self.update_driving_state(is_driving=True)
+                    self.update_driving_state(is_driving=False)
                     continue
 
                 # If object too far away, clear the LED and continue driving.
                 if closest_object.distance >= constants.TRAFFIC_LIGHT_DISTANCE_THRESHOLD:
                     self.update_led()
-                    self.update_driving_state(is_driving=True)
+                    self.update_driving_state(is_driving=False)
                     continue
 
                 # If object detected:
                 if closest_object.type == "person":
                     self.update_led(color="yellow", blinking=True)
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
+                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
                 elif closest_object.type == "stop sign":
                     self.update_led(color="red", blinking=True)
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
+                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
                 elif closest_object.type == "traffic light":
                     self.update_led(color=closest_object.color)
-                    self.update_driving_state(
-                        is_driving=closest_object.color == "green"
-                    )
+                    self.update_driving_state(is_driving=True)
+                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+
                 else:
                     self.get_logger().error(
                         f"No logic for object type {closest_object.type}"
@@ -301,16 +305,17 @@ class TrafficNavigationNode(Node):
             self.destroy_node()
             rclpy.shutdown()
 
-    def plan_action(self, delta_x):
-        if not self.is_driving:
-            # No Action
+    # def plan_action(self, delta_x):
+    #     # object detected. devide action space according to the signs.
+    #     if not self.is_driving:
+    #         # No Action
 
-            ################################## [1]로 수정해야함, 원활한 테스트를 위해 [6]으로 수정함
+    #         ################################## [1]로 수정해야함, 원활한 테스트를 위해 [6]으로 수정함
 
-            return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
+    #         return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
 
-        # For now only drive straight ahead.
-        return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
+    #     # For now only drive straight ahead.
+    #     return
 
     def main_loop(self):
         """Function which runs in a separate thread and decides the actions
@@ -326,23 +331,28 @@ class TrafficNavigationNode(Node):
         try:
             while not self.stop_thread:
                 # Keep planning new actions, car may need to stop because of sign input.
-                action_category = self.plan_action(0)
-                msg.angle, msg.throttle = control_utils.get_mapped_action(
-                    action_category, self.max_speed_pct
-                )
+                if self.is_driving:
+                    # action_category = self.plan_action(0)
+                    msg.angle, msg.throttle = control_utils.get_mapped_action(
+                        self.action_category, self.max_speed_pct
+                    )
 
-                # Log the action.
-                action = constants.ACTION_SPACE[action_category][
-                    constants.ActionSpaceKeys.ACTION
-                ]
+                    # Log the action.
+                    action = constants.ACTION_SPACE[self.action_category][
+                        constants.ActionSpaceKeys.ACTION
+                    ]
 
-                self.get_logger().info(f"Action -> {action}")
+                    self.get_logger().info(f"Action -> {action}")
 
-                # Publish blind action
-                if not self.is_driving
+                    # Publish blind action
                     self.action_publisher.publish(msg)
 
-                time.sleep(constants.DEFAULT_SLEEP)
+                    time.sleep(constants.DEFAULT_SLEEP)
+
+                    self.is_driving = False
+
+                else:
+                    continue
 
         except Exception as ex:
             self.get_logger().error(f"Failed to publish action to servo: {ex}")
