@@ -81,7 +81,8 @@ class ObjectDetectionNode(Node):
         self.image_publisher = self.create_publisher(
             EvoSensorMsg, constants.IMAGE_PUBLISHER_TOPIC, qos_profile
         )
-        self.image_pub_inference=False
+        
+        self.object_detected = False
         
         self.bridge = CvBridge()
 
@@ -208,6 +209,7 @@ class ObjectDetectionNode(Node):
                     confidence = np.float(proposal[2])
 
                     if confidence <= constants.CONFIDENCE_THRESHOLD:
+                        self.object_detected = False
                         continue
 
                     # Human readable.
@@ -215,9 +217,11 @@ class ObjectDetectionNode(Node):
                     label = constants.COCO_LABELS[label_id]
 
                     if label not in constants.DETECT_CLASSES:
-                        self.image_pub_inference=True
+                        self.object_detected = False
                         continue
-                    self.image_pub_inference=False
+
+                    self.object_detected = True
+
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )
@@ -276,10 +280,10 @@ class ObjectDetectionNode(Node):
 
                 # Publish inference results.
                 
-                if self.image_pub_inference:
-                    self.image_publisher.publish(sensor_data)
-                else:
+                if self.object_detected:
                     self.inference_result_publisher.publish(infer_results_array)
+                else:
+                    self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
                     f"Total execution time = {time.time() - start_time}"
                 )
