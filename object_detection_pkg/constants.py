@@ -15,6 +15,8 @@
 #################################################################################
 
 DISPLAY_IMAGE_PUBLISHER_TOPIC = "detection_display"
+
+# traffic_sign_node, deepdriver_navigation_node
 INFERENCE_RESULT_PUBLISHER_TOPIC = "inference_results"
 
 SENSOR_FUSION_PKG_NS = "/sensor_fusion_pkg"

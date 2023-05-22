@@ -81,7 +81,7 @@ class ObjectDetectionNode(Node):
         self.image_publisher = self.create_publisher(
             EvoSensorMsg, constants.IMAGE_PUBLISHER_TOPIC, qos_profile
         )
-        self.image_pub=False
+        self.image_pub_inference=False
         
         self.bridge = CvBridge()
 
@@ -215,9 +215,9 @@ class ObjectDetectionNode(Node):
                     label = constants.COCO_LABELS[label_id]
 
                     if label not in constants.DETECT_CLASSES:
-                        self.image_pub=True
+                        self.image_pub_inference=True
                         continue
-                    self.image_pub=False
+                    self.image_pub_inference=False
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )
@@ -275,9 +275,11 @@ class ObjectDetectionNode(Node):
                     self.display_image_publisher.publish(display_image)
 
                 # Publish inference results.
-                self.inference_result_publisher.publish(infer_results_array)
-                if self.image_pub:
+                
+                if self.image_pub_inference:
                     self.image_publisher.publish(sensor_data)
+                else:
+                    self.inference_result_publisher.publish(infer_results_array)
                 self.get_logger().info(
                     f"Total execution time = {time.time() - start_time}"
                 )
