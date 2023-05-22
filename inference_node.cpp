@@ -119,7 +119,7 @@ namespace InferTask {
             if (itInferTask != taskList_.end() && itPreProcess != preProcessList_.end()) {
                 switch(req->task_type) {
                     case rlTask:
-                        itInferTask->second.reset(new IntelInferenceEngine::RLInferenceModel(this->shared_from_this(), "/object_detection_pkg/sensor_msgs"));
+                        itInferTask->second.reset(new IntelInferenceEngine::RLInferenceModel(this->shared_from_this(), "/object_detection_pkg/sensor_image"));
                         break;
                     case objDetectTask:
                         //! TODO add onject detection when class is implemented.
