@@ -181,7 +181,7 @@ namespace SysCtrl
                 activeState_->second->setStateActive(true);
 
                 activeState_ = stateList_.find(deepdriver);
-                activeState_->seconde->setStateActive(true);
+                activeState_->second->setStateActive(true);
 
                 initialized_ = true;
                 timer_->cancel();
