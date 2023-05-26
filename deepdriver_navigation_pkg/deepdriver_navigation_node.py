@@ -93,7 +93,7 @@ class TrafficNavigationNode(Node):
         self.lock = threading.Lock()
 
         # Boolean to control stop/start state.
-        self.is_driving = True
+        self.is_driving = False
 
         # Default maximum speed percentage (updated as per request using service call).
         self.max_speed_pct = constants.MAX_SPEED_PCT
