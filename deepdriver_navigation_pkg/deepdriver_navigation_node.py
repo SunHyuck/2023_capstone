@@ -279,6 +279,17 @@ class TrafficNavigationNode(Node):
                     self.update_driving_state(is_driving=True)
                     self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
 
+                ############################### 차량
+                elif closest_object.tpye =="car_left":
+                    self.update_led(color="yellow", blinking=True)
+                    self.update_driving_state(is_driving=True)
+                    self.action_category = constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
+                elif closest_object.tpye =="car_right":
+                    self.update_led(color="yellow", blinking=True)
+                    self.update_driving_state(is_driving=True)
+                    self.action_category = constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
+                ###############################   
+
                 else:
                     self.get_logger().error(
                         f"No logic for object type {closest_object.type}"
