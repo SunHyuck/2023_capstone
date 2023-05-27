@@ -281,8 +281,10 @@ class ObjectDetectionNode(Node):
                 # Publish inference results.
                 
                 if self.object_detected:
+                    self.get_logger().info("object detected")
                     self.inference_result_publisher.publish(infer_results_array)
                 else:
+                    self.get_logger().info("object not detected")
                     self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
                     f"Total execution time = {time.time() - start_time}"
