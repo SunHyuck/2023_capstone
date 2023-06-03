@@ -238,6 +238,9 @@ class TrafficNavigationNode(Node):
             while not self.stop_thread:
                 # Get a new message to plan action.
                 traffic_msg = self.sign_msg_buffer.get()
+
+                start_time = time.time()
+
                 signs = traffic_msg.signs
                 lights = traffic_msg.lights
 
@@ -297,6 +300,9 @@ class TrafficNavigationNode(Node):
                     # Stop the car for safety reasons.
                     self.update_driving_state(is_driving=False)
                     self.update_led()
+                self.get_logger().info(
+                    f"########### Total navigation execution time = {time.time() - start_time} ###########"
+                )
 
         except Exception as ex:
             self.get_logger().error(f"Failed to process traffic sign input: {ex}")

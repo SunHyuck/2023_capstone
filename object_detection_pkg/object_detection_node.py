@@ -287,7 +287,7 @@ class ObjectDetectionNode(Node):
                     self.get_logger().info("object not detected")
                     self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
-                    f"Total execution time = {time.time() - start_time}"
+                    f"########### Total object_detection execution time = {time.time() - start_time} ###########"
                 )
         except Exception as ex:
             self.get_logger().error(f"Failed inference step: {ex}")

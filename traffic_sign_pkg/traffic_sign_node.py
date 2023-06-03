@@ -223,7 +223,7 @@ class TrafficSignNode(Node):
                     self.display_image_publisher.publish(display_image)
 
                 self.get_logger().info(
-                    f"Total execution time = {time.time() - start_time}"
+                    f"########### Total traffic sign node execution time = {time.time() - start_time} ###########"
                 )
         except Exception as ex:
             self.get_logger().error(f"Failed detection step: {ex}")
