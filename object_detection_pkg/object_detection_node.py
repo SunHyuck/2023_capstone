@@ -217,6 +217,11 @@ class ObjectDetectionNode(Node):
                     label = constants.COCO_LABELS[label_id]
 
                     if label not in constants.DETECT_CLASSES:
+                    #### error ck
+                        self.get_logger().info(
+                        f"***********************if this *log is the last, the error is confirmed"
+                    )
+                    #### error ck end
                         self.object_detected = False
                         continue
 
@@ -225,6 +230,12 @@ class ObjectDetectionNode(Node):
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )
+
+                    #### error ck
+                    self.get_logger().info(
+                        f"***********************if this *log is the last, it is not error related"
+                    )
+                    #### error ck end
 
                     xmin = np.int(self.w * proposal[3])
                     ymin = np.int(self.h * proposal[4])
