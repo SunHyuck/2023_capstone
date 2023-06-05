@@ -125,7 +125,7 @@ class TrafficNavigationNode(Node):
 
         self.action_category = None
 
-        self.oded = True
+        self.oded = 1
 
         self.get_logger().info("Waiting for input...")
 
