@@ -206,7 +206,6 @@ class ObjectDetectionNode(Node):
                 outputs = []
 
                 self.object_detected = False
-                infer_results_array.oded = 0
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
 
@@ -221,7 +220,6 @@ class ObjectDetectionNode(Node):
                         continue
                     
                     self.object_detected = True
-                    infer_results_array.oded = 1
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )

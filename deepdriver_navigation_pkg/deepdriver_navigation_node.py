@@ -125,7 +125,6 @@ class TrafficNavigationNode(Node):
 
         self.action_category = None
 
-        self.oded = 1
 
         self.get_logger().info("Waiting for input...")
 
@@ -240,8 +239,6 @@ class TrafficNavigationNode(Node):
             while not self.stop_thread:
                 # Get a new message to plan action.
                 traffic_msg = self.sign_msg_buffer.get()
-
-                self.oded = traffic_msg.oded
                 
                 start_time = time.time()
 
@@ -320,7 +317,6 @@ class TrafficNavigationNode(Node):
                 constants.ActionValues.DEFAULT,
                 constants.ActionValues.DEFAULT,
             )
-            msg.oded = self.oded
             self.action_publisher.publish(msg)
 
             # Destroy the ROS Node running in another thread as well.
@@ -366,8 +362,6 @@ class TrafficNavigationNode(Node):
 
                     self.get_logger().info(f"Action -> {action}")
 
-                    msg.oded = self.oded
-
                     # Publish blind action
                     self.action_publisher.publish(msg)
 
@@ -387,7 +381,6 @@ class TrafficNavigationNode(Node):
                 constants.ActionValues.DEFAULT,
                 constants.ActionValues.DEFAULT,
             )
-            msg.oded = self.oded
             self.action_publisher.publish(msg)
 
             # Destroy the ROS Node running in another thread as well.
