@@ -186,7 +186,9 @@ class ObjectDetectionNode(Node):
                 # Read and postprocess output.
                 res = res[self.out_blob]
                 output_data = res[0][0]
-
+                self.get_logger().info(
+                    f"###########################output data: {len(output_data)}"
+                )
                 # Object to store infer results in.
                 infer_results_array = InferResultsArray()
                 infer_results_array.results = []  # List of InferResults objects.
@@ -204,11 +206,16 @@ class ObjectDetectionNode(Node):
                 # - Check if belongs to one of the classes we're interested in.
 
                 outputs = []
-
+                self.get_logger().info(
+                    f"============output for start==================="
+                )
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
 
                     if confidence <= constants.CONFIDENCE_THRESHOLD:
+                        self.get_logger().info(
+                            f"==============under the confidence==============="
+                        )
                         self.object_detected = False
                         continue
 
@@ -217,6 +224,9 @@ class ObjectDetectionNode(Node):
                     label = constants.COCO_LABELS[label_id]
 
                     if label not in constants.DETECT_CLASSES:
+                        self.get_logger().info(
+                            f"===========can't find classes============="
+                        )
                         self.object_detected = False
                         continue
 
@@ -228,7 +238,7 @@ class ObjectDetectionNode(Node):
 
                     #### error ck
                     self.get_logger().info(
-                        f"***********************if this *log is the last, it is not error related"
+                        f"==========pass============="
                     )
                     #### error ck end
 
