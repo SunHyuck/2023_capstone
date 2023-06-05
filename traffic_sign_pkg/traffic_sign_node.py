@@ -208,6 +208,7 @@ class TrafficSignNode(Node):
 
                 # Always publish the message regardless of the number of detected signs:
                 # no signs is also valid road information.
+                traffic_message.oded = InferResultsArray.oded
                 self.traffic_sign_publisher.publish(traffic_message)
 
                 # TODO: Output debug data on top of input image.

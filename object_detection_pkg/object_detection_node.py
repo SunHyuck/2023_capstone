@@ -186,9 +186,7 @@ class ObjectDetectionNode(Node):
                 # Read and postprocess output.
                 res = res[self.out_blob]
                 output_data = res[0][0]
-                self.get_logger().info(
-                    f"###########################output data: {len(output_data)}"
-                )
+
                 # Object to store infer results in.
                 infer_results_array = InferResultsArray()
                 infer_results_array.results = []  # List of InferResults objects.
@@ -208,7 +206,7 @@ class ObjectDetectionNode(Node):
                 outputs = []
 
                 self.object_detected = False
-
+                infer_results_array.oded = 0
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
 
@@ -223,7 +221,7 @@ class ObjectDetectionNode(Node):
                         continue
                     
                     self.object_detected = True
-
+                    infer_results_array.oded = 1
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )
@@ -283,13 +281,11 @@ class ObjectDetectionNode(Node):
                 # Publish inference results.
                 
                 if self.object_detected:
-                    self.get_logger().info("object detected")
                     self.inference_result_publisher.publish(infer_results_array)
                 else:
-                    self.get_logger().info("object not detected")
                     self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
-                    f"########### Total object_detection execution time = {time.time() - start_time} ###########"
+                    f"Total object_detection execution time = {time.time() - start_time}"
                 )
         except Exception as ex:
             self.get_logger().error(f"Failed inference step: {ex}")

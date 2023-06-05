@@ -26,6 +26,8 @@
 #include "deepracer_interfaces_pkg/srv/get_led_ctrl_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/nav_throttle_srv.hpp"
 
+int detected = 1;
+
 namespace
 {
     // Name of relavent services.
@@ -130,7 +132,7 @@ namespace SysCtrl
 
     void AutoDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
     {
-        if (!isActive_)
+        if (!isActive_ || detected)
         {
             return;
         }
@@ -638,10 +640,10 @@ namespace SysCtrl
         // Subscribe to the appropriate servo topic.
         auto qos = rclcpp::QoS(rclcpp::KeepLast(1));
         qos.best_effort();
-        auto servoMsgStrategy = std::make_shared<rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<deepracer_interfaces_pkg::msg::ServoCtrlMsg, 1>>();
-        servoPub_ = ctrlNode->create_publisher<deepracer_interfaces_pkg::msg::ServoCtrlMsg>(SERVO_TOPIC, qos);
+        auto servoMsgStrategy = std::make_shared<rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd, 1>>();
+        servoPub_ = ctrlNode->create_publisher<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd>(SERVO_TOPIC, qos);
 
-        servoSub_ = ctrlNode->create_subscription<deepracer_interfaces_pkg::msg::ServoCtrlMsg>(subName,
+        servoSub_ = ctrlNode->create_subscription<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd>(subName,
                                                                                                qos,
                                                                                                std::bind(&DeepDriverDriveCtrl::servoCB,
                                                                                                          this,
@@ -656,16 +658,22 @@ namespace SysCtrl
         waitForService(servoGPIOClient_, ctrlNode);
     }
 
-    void DeepDriverDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
+    void DeepDriverDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd::SharedPtr msg)
     {
         if (!isActive_ || !servoPub_)
         {
             return;
         }
-        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
-        servoMsg.angle = msg->angle;
-        servoMsg.throttle = msg->throttle;
-        servoPub_->publish(std::move(servoMsg)); // Publish it along.
+        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd();
+        if (servoMsg.oded) {
+            servoMsg.angle = msg->angle;
+            servoMsg.throttle = msg->throttle;
+            servoPub_->publish(std::move(servoMsg)); // Publish it along.
+            detected = 1;
+        }
+        else {
+            detected = 0;
+        }
     }
 
     bool DeepDriverDriveCtrl::loadModelReq(int requestSeqNum, std::string modelName, std::vector<int> modelMetadataSensors,
@@ -694,7 +702,7 @@ namespace SysCtrl
     {
         isActive_ = isActive;
         // Stop car and straighten wheels when starting or stopping this state
-        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
+        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd();
         servoMsg.angle = 0.0;
         servoMsg.throttle = 0.0;
         servoPub_->publish(servoMsg);
