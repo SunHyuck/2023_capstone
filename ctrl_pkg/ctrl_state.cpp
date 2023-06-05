@@ -665,16 +665,10 @@ namespace SysCtrl
             return;
         }
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
-        servoMsg.oded = msg->oded;
-        if (servoMsg.oded) {
-            servoMsg.angle = msg->angle;
-            servoMsg.throttle = msg->throttle;
-            servoPub_->publish(std::move(servoMsg)); // Publish it along.
-            detected = 1;
-        }
-        else {
-            detected = 0;
-        }
+        servoMsg.angle = msg->angle;
+        servoMsg.throttle = msg->throttle;
+        servoPub_->publish(std::move(servoMsg)); // Publish it along.
+
     }
 
     bool DeepDriverDriveCtrl::loadModelReq(int requestSeqNum, std::string modelName, std::vector<int> modelMetadataSensors,
