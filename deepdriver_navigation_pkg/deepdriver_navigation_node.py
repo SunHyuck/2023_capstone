@@ -123,7 +123,7 @@ class TrafficNavigationNode(Node):
         self.led_thread.start()
         self.led_thread_initialized = True
 
-        self.action_category
+        self.action_category = None
 
         self.get_logger().info("Waiting for input...")
 
