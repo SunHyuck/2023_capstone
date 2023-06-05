@@ -40,7 +40,7 @@ from rclpy.node import Node
 from rclpy.executors import MultiThreadedExecutor
 from rclpy.qos import QoSProfile, QoSHistoryPolicy, QoSReliabilityPolicy
 from rclpy.callback_groups import MutuallyExclusiveCallbackGroup
-from deepracer_interfaces_pkg.msg import ServoCtrlMsg_dd, TrafficMsg
+from deepracer_interfaces_pkg.msg import ServoCtrlMsg, TrafficMsg
 from deepracer_interfaces_pkg.srv import SetMaxSpeedSrv, SetLedCtrlSrv
 from deepdriver_navigation_pkg import constants, utils, control_utils
 
@@ -61,7 +61,7 @@ class TrafficNavigationNode(Node):
 
         # Creating publisher to publish action (angle and throttle).
         self.action_publisher = self.create_publisher(
-            ServoCtrlMsg_dd, constants.ACTION_PUBLISH_TOPIC, qos_profile
+            ServoCtrlMsg, constants.ACTION_PUBLISH_TOPIC, qos_profile
         )
 
         # Service to dynamically set MAX_SPEED_PCT.
@@ -125,7 +125,7 @@ class TrafficNavigationNode(Node):
 
         self.action_category = None
 
-        self.oded = 1
+        self.oded = True
 
         self.get_logger().info("Waiting for input...")
 
@@ -315,7 +315,7 @@ class TrafficNavigationNode(Node):
             self.update_driving_state(is_driving=False)
 
             # Stop the car
-            msg = ServoCtrlMsg_dd()
+            msg = ServoCtrlMsg()
             msg.angle, msg.throttle = (
                 constants.ActionValues.DEFAULT,
                 constants.ActionValues.DEFAULT,
@@ -344,7 +344,7 @@ class TrafficNavigationNode(Node):
         the car should take based on the input from the traffic signs node.
         """
 
-        msg = ServoCtrlMsg_dd()
+        msg = ServoCtrlMsg()
         msg.angle, msg.throttle = (
             constants.ActionValues.DEFAULT,
             constants.ActionValues.DEFAULT,
@@ -382,7 +382,7 @@ class TrafficNavigationNode(Node):
             self.get_logger().error(f"Failed to publish action to servo: {ex}")
 
             # Stop the car
-            msg = ServoCtrlMsg_dd()
+            msg = ServoCtrlMsg()
             msg.angle, msg.throttle = (
                 constants.ActionValues.DEFAULT,
                 constants.ActionValues.DEFAULT,

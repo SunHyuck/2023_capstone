@@ -640,10 +640,10 @@ namespace SysCtrl
         // Subscribe to the appropriate servo topic.
         auto qos = rclcpp::QoS(rclcpp::KeepLast(1));
         qos.best_effort();
-        auto servoMsgStrategy = std::make_shared<rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd, 1>>();
-        servoPub_ = ctrlNode->create_publisher<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd>(SERVO_TOPIC, qos);
+        auto servoMsgStrategy = std::make_shared<rclcpp::strategies::message_pool_memory_strategy::MessagePoolMemoryStrategy<deepracer_interfaces_pkg::msg::ServoCtrlMsg, 1>>();
+        servoPub_ = ctrlNode->create_publisher<deepracer_interfaces_pkg::msg::ServoCtrlMsg>(SERVO_TOPIC, qos);
 
-        servoSub_ = ctrlNode->create_subscription<deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd>(subName,
+        servoSub_ = ctrlNode->create_subscription<deepracer_interfaces_pkg::msg::ServoCtrlMsg>(subName,
                                                                                                qos,
                                                                                                std::bind(&DeepDriverDriveCtrl::servoCB,
                                                                                                          this,
@@ -658,13 +658,14 @@ namespace SysCtrl
         waitForService(servoGPIOClient_, ctrlNode);
     }
 
-    void DeepDriverDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd::SharedPtr msg)
+    void DeepDriverDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
     {
         if (!isActive_ || !servoPub_)
         {
             return;
         }
-        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd();
+        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
+        servoMsg.oded = msg->oded;
         if (servoMsg.oded) {
             servoMsg.angle = msg->angle;
             servoMsg.throttle = msg->throttle;
@@ -702,7 +703,7 @@ namespace SysCtrl
     {
         isActive_ = isActive;
         // Stop car and straighten wheels when starting or stopping this state
-        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg_dd();
+        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = 0.0;
         servoMsg.throttle = 0.0;
         servoPub_->publish(servoMsg);
