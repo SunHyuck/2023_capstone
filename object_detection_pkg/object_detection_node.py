@@ -206,17 +206,13 @@ class ObjectDetectionNode(Node):
                 # - Check if belongs to one of the classes we're interested in.
 
                 outputs = []
-                self.get_logger().info(
-                    f"============output for start==================="
-                )
+
+                self.object_detected = False
+
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
 
                     if confidence <= constants.CONFIDENCE_THRESHOLD:
-                        self.get_logger().info(
-                            f"==============under the confidence==============="
-                        )
-                        self.object_detected = False
                         continue
 
                     # Human readable.
@@ -224,23 +220,13 @@ class ObjectDetectionNode(Node):
                     label = constants.COCO_LABELS[label_id]
 
                     if label not in constants.DETECT_CLASSES:
-                        self.get_logger().info(
-                            f"===========can't find classes============="
-                        )
-                        self.object_detected = False
                         continue
-
+                    
                     self.object_detected = True
 
                     self.get_logger().info(
                         f"Detected {label} - confidence {confidence}"
                     )
-
-                    #### error ck
-                    self.get_logger().info(
-                        f"==========pass============="
-                    )
-                    #### error ck end
 
                     xmin = np.int(self.w * proposal[3])
                     ymin = np.int(self.h * proposal[4])
