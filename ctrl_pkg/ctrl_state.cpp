@@ -132,7 +132,7 @@ namespace SysCtrl
 
     void AutoDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
     {
-        if (!isActive_ || detected)
+        if (!isActive_)
         {
             return;
         }

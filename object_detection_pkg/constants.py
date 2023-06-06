@@ -20,7 +20,7 @@ DISPLAY_IMAGE_PUBLISHER_TOPIC = "detection_display"
 INFERENCE_RESULT_PUBLISHER_TOPIC = "inference_results"
 
 SENSOR_FUSION_PKG_NS = "/sensor_fusion_pkg"
-SENSOR_FUSION_TOPIC = f"{SENSOR_FUSION_PKG_NS}/sensor_msg"
+SENSOR_FUSION_TOPIC = f"{SENSOR_FUSION_PKG_NS}/ss_msg"
 
 IMAGE_PUBLISHER_TOPIC = "sensor_image"
 
