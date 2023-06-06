@@ -93,7 +93,7 @@ class TrafficNavigationNode(Node):
         self.lock = threading.Lock()
 
         # Boolean to control stop/start state.
-        self.is_driving = False
+        self.is_driving = True
 
         # Default maximum speed percentage (updated as per request using service call).
         self.max_speed_pct = constants.MAX_SPEED_PCT
@@ -122,8 +122,6 @@ class TrafficNavigationNode(Node):
         self.led_thread = threading.Thread(target=self.led_loop)
         self.led_thread.start()
         self.led_thread_initialized = True
-
-        self.action_category
 
         self.get_logger().info("Waiting for input...")
 
@@ -238,9 +236,6 @@ class TrafficNavigationNode(Node):
             while not self.stop_thread:
                 # Get a new message to plan action.
                 traffic_msg = self.sign_msg_buffer.get()
-
-                start_time = time.time()
-
                 signs = traffic_msg.signs
                 lights = traffic_msg.lights
 
@@ -259,40 +254,37 @@ class TrafficNavigationNode(Node):
                 # If no object, clear the LED and continue driving.
                 if not closest_object:
                     self.update_led()
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
                     continue
 
                 # If object too far away, clear the LED and continue driving.
-                if closest_object.distance >= constants.TRAFFIC_LIGHT_DISTANCE_THRESHOLD:
+                if closest_object.distance >= constants.DISTANCE_THRESHOLD:
                     self.update_led()
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
                     continue
 
                 # If object detected:
                 if closest_object.type == "person":
                     self.update_led(color="yellow", blinking=True)
-                    self.update_driving_state(is_driving=True)
-                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+                    self.update_driving_state(is_driving=False)
                 elif closest_object.type == "stop sign":
                     self.update_led(color="red", blinking=True)
-                    self.update_driving_state(is_driving=True)
-                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+                    self.update_driving_state(is_driving=False)
+                ############################### 차량
+                # elif closest_object.tpye =="car_left":
+                #     self.update_led(color="yellow", blinking=True)
+                #     self.update_driving_state(is_driving='left')
+                #    
+                # elif closest_object.tpye =="car_right":
+                #     self.update_led(color="yellow", blinking=True)
+                #     self.update_driving_state(is_driving='right')
+                #     
+                ###############################
                 elif closest_object.type == "traffic light":
                     self.update_led(color=closest_object.color)
-                    self.update_driving_state(is_driving=True)
-                    self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
-
-                ############################### 차량
-                elif closest_object.tpye =="car_left":
-                    self.update_led(color="yellow", blinking=True)
-                    self.update_driving_state(is_driving=True)
-                    self.action_category = constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
-                elif closest_object.tpye =="car_right":
-                    self.update_led(color="yellow", blinking=True)
-                    self.update_driving_state(is_driving=True)
-                    self.action_category = constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
-                ###############################   
-
+                    self.update_driving_state(
+                        is_driving=closest_object.color == "green"
+                    )
                 else:
                     self.get_logger().error(
                         f"No logic for object type {closest_object.type}"
@@ -300,9 +292,6 @@ class TrafficNavigationNode(Node):
                     # Stop the car for safety reasons.
                     self.update_driving_state(is_driving=False)
                     self.update_led()
-                self.get_logger().info(
-                    f"########### Total navigation execution time = {time.time() - start_time} ###########"
-                )
 
         except Exception as ex:
             self.get_logger().error(f"Failed to process traffic sign input: {ex}")
@@ -322,17 +311,21 @@ class TrafficNavigationNode(Node):
             self.destroy_node()
             rclpy.shutdown()
 
-    # def plan_action(self, delta_x):
-    #     # object detected. devide action space according to the signs.
-    #     if not self.is_driving:
-    #         # No Action
+    def plan_action(self, delta_x):
+        # For now only drive straight ahead.
 
-    #         ################################## [1]로 수정해야함, 원활한 테스트를 위해 [6]으로 수정함
+        ############################### 차량
+        #if self.is_driving=='car_left':
+        #    return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
+        #elif self.is_driving =="car_right"
+        #    return constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
+        #elif로 변경
+        ############################### 차량
 
-    #         return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
-
-    #     # For now only drive straight ahead.
-    #     return
+        if self.is_driving:
+            return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
+        # No Action
+        return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
 
     def main_loop(self):
         """Function which runs in a separate thread and decides the actions
@@ -348,28 +341,22 @@ class TrafficNavigationNode(Node):
         try:
             while not self.stop_thread:
                 # Keep planning new actions, car may need to stop because of sign input.
-                if self.is_driving:
-                    # action_category = self.plan_action(0)
-                    msg.angle, msg.throttle = control_utils.get_mapped_action(
-                        self.action_category, self.max_speed_pct
-                    )
+                action_category = self.plan_action(0)
+                msg.angle, msg.throttle = control_utils.get_mapped_action(
+                    action_category, self.max_speed_pct
+                )
 
-                    # Log the action.
-                    action = constants.ACTION_SPACE[self.action_category][
-                        constants.ActionSpaceKeys.ACTION
-                    ]
+                # Log the action.
+                action = constants.ACTION_SPACE[action_category][
+                    constants.ActionSpaceKeys.ACTION
+                ]
 
-                    self.get_logger().info(f"Action -> {action}")
+                self.get_logger().info(f"Action -> {action}")
 
-                    # Publish blind action
-                    self.action_publisher.publish(msg)
+                # Publish blind action
+                self.action_publisher.publish(msg)
 
-                    time.sleep(constants.DEFAULT_SLEEP)
-
-                    self.is_driving = False
-
-                else:
-                    continue
+                time.sleep(constants.DEFAULT_SLEEP)
 
         except Exception as ex:
             self.get_logger().error(f"Failed to publish action to servo: {ex}")

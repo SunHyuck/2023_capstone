@@ -26,6 +26,8 @@
 #include "deepracer_interfaces_pkg/srv/get_led_ctrl_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/nav_throttle_srv.hpp"
 
+int detected = 1;
+
 namespace
 {
     // Name of relavent services.
@@ -130,7 +132,7 @@ namespace SysCtrl
 
     void AutoDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
     {
-        if (!isActive_)
+        if (!isActive_ || detected)
         {
             return;
         }
@@ -665,7 +667,15 @@ namespace SysCtrl
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
-        servoPub_->publish(std::move(servoMsg)); // Publish it along.
+        if (servoMsg.angle ==0 && servoMsg.throttle==0.7){
+            detected=0;
+            return;
+        }
+        else {
+            detected=1;
+            servoPub_->publish(std::move(servoMsg)); // Publish it along.
+        }
+        
     }
 
     bool DeepDriverDriveCtrl::loadModelReq(int requestSeqNum, std::string modelName, std::vector<int> modelMetadataSensors,
