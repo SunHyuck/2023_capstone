@@ -172,7 +172,7 @@ class ObjectDetectionNode(Node):
             while not self.stop_thread:
                 # Get an input image from double buffer.
                 sensor_data = self.input_buffer.get()
-
+                max_inf = 0
                 start_time = time.time()
 
                 # Pre-process input.
@@ -186,7 +186,7 @@ class ObjectDetectionNode(Node):
                 # Read and postprocess output.
                 res = res[self.out_blob]
                 output_data = res[0][0]
-
+                
                 # Object to store infer results in.
                 infer_results_array = InferResultsArray()
                 infer_results_array.results = []  # List of InferResults objects.
@@ -208,11 +208,14 @@ class ObjectDetectionNode(Node):
                 self.object_detected = False
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
-                    self.get_logger().info(
-                        f"label_id: {proposal[1]}, confidence: {confidence}"
-                    )                   
+        
                     if confidence <= constants.CONFIDENCE_THRESHOLD:
                         continue
+                    
+                    if confidence < max_inf:
+                        continue
+                    else:
+                        max_inf = confidence
 
                     # Human readable.
                     label_id = np.int(proposal[1])
@@ -242,7 +245,7 @@ class ObjectDetectionNode(Node):
 
                     infer_results_array.results.append(infer_result)
 
-                    outputs.append((label_id, confidence, xmin, ymin, xmax, ymax))
+                    # outputs.append((label_id, confidence, xmin, ymin, xmax, ymax))
 
                 # if self.publish_display_output:
                 #     self.get_logger().info("Publishing display output")
