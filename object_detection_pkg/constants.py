@@ -20,7 +20,7 @@ DISPLAY_IMAGE_PUBLISHER_TOPIC = "detection_display"
 INFERENCE_RESULT_PUBLISHER_TOPIC = "inference_results"
 
 SENSOR_FUSION_PKG_NS = "/sensor_fusion_pkg"
-SENSOR_FUSION_TOPIC = f"{SENSOR_FUSION_PKG_NS}/ss_msg"
+SENSOR_FUSION_TOPIC = f"{SENSOR_FUSION_PKG_NS}/sensor_msg"
 
 IMAGE_PUBLISHER_TOPIC = "sensor_image"
 
@@ -121,7 +121,7 @@ COCO_LABELS = {
 DETECT_CLASSES = ["person", "traffic light", "stop sign"]
 
 # Confidence threshold for the object detector.
-CONFIDENCE_THRESHOLD = 0.8
+CONFIDENCE_THRESHOLD = 0.65
 
 # OpenVINO IR of the ssd_mobilenet_v2_coco object detection model.
 MODEL_XML = "/opt/models/frozen_inference_graph.xml"

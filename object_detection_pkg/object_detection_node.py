@@ -208,7 +208,9 @@ class ObjectDetectionNode(Node):
                 self.object_detected = False
                 for _, proposal in enumerate(output_data):
                     confidence = np.float(proposal[2])
-
+                    self.get_logger().info(
+                        f"label_id: {proposal[1]}, confidence: {confidence}"
+                    )                   
                     if confidence <= constants.CONFIDENCE_THRESHOLD:
                         continue
 
