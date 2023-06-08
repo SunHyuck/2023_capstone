@@ -242,39 +242,39 @@ class ObjectDetectionNode(Node):
 
                     outputs.append((label_id, confidence, xmin, ymin, xmax, ymax))
 
-                if self.publish_display_output:
-                    self.get_logger().info("Publishing display output")
+                # if self.publish_display_output:
+                #     self.get_logger().info("Publishing display output")
 
-                    # Change data layout from CHW to HWC.
-                    display_image = input_data[self.input_name].transpose((1, 2, 0))
+                #     # Change data layout from CHW to HWC.
+                #     display_image = input_data[self.input_name].transpose((1, 2, 0))
 
-                    for (label_id, confidence, xmin, ymin, xmax, ymax) in outputs:
-                        # Drawing bounding boxes on the image.
-                        cv2.rectangle(
-                            display_image,
-                            (xmin, ymin),
-                            (xmax, ymax),
-                            (232, 35, 244),
-                            2,
-                        )
-                        cv2.putText(
-                            display_image,
-                            "{} ({:.2f})".format(
-                                constants.COCO_LABELS[label_id], confidence
-                            ),
-                            (xmin, ymin - 10),
-                            cv2.FONT_HERSHEY_SIMPLEX,
-                            0.4,
-                            (232, 35, 244),
-                            2,
-                        )
+                #     for (label_id, confidence, xmin, ymin, xmax, ymax) in outputs:
+                #         # Drawing bounding boxes on the image.
+                #         cv2.rectangle(
+                #             display_image,
+                #             (xmin, ymin),
+                #             (xmax, ymax),
+                #             (232, 35, 244),
+                #             2,
+                #         )
+                #         cv2.putText(
+                #             display_image,
+                #             "{} ({:.2f})".format(
+                #                 constants.COCO_LABELS[label_id], confidence
+                #             ),
+                #             (xmin, ymin - 10),
+                #             cv2.FONT_HERSHEY_SIMPLEX,
+                #             0.4,
+                #             (232, 35, 244),
+                #             2,
+                #         )
 
-                    # Publish to display topic (Can be viewed on localhost:8080).
-                    display_image = self.bridge.cv2_to_imgmsg(
-                        np.array(display_image), "bgr8"
-                    )
+                #     # Publish to display topic (Can be viewed on localhost:8080).
+                #     display_image = self.bridge.cv2_to_imgmsg(
+                #         np.array(display_image), "bgr8"
+                #     )
 
-                    self.display_image_publisher.publish(display_image)
+                #     self.display_image_publisher.publish(display_image)
 
                 # Publish inference results.
                 

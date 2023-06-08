@@ -121,7 +121,7 @@ COCO_LABELS = {
 DETECT_CLASSES = ["person", "traffic light", "stop sign"]
 
 # Confidence threshold for the object detector.
-CONFIDENCE_THRESHOLD = 0.1
+CONFIDENCE_THRESHOLD = 0.8
 
 # OpenVINO IR of the ssd_mobilenet_v2_coco object detection model.
 MODEL_XML = "/opt/models/frozen_inference_graph.xml"
