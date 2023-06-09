@@ -134,7 +134,7 @@ namespace SysCtrl
         {
             return;
         }
-        RCLCPP_INFO(this->get_logger(), "AutoDriver Servo Called");
+        RCLCPP_INFO(ctrlNode->get_logger(), "AutoDriver Servo Called");
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
@@ -663,7 +663,7 @@ namespace SysCtrl
         {
             return;
         }
-        RCLCPP_INFO(this->get_logger(), "DD Servo Called");
+        RCLCPP_INFO(ctrlNode->get_logger(), "DD Servo Called");
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
