@@ -176,13 +176,8 @@ namespace SysCtrl
                               {manual, std::make_shared<SysCtrl::ManualDriveCtrl>(this->shared_from_this(), MANUAL_DRIVE_TOPIC)},
                               {calibration, std::make_shared<SysCtrl::CalibrationCtrl>(this->shared_from_this(), CALIBRATION_DRIVE_TOPIC)},
                               {deepdriver, std::make_shared<SysCtrl::DeepDriverDriveCtrl>(this->shared_from_this(), DEEPDRIVER_DRIVE_TOPIC)}};
-
                 activeState_ = stateList_.find(manual);
                 activeState_->second->setStateActive(true);
-
-                activeState_ = stateList_.find(deepdriver);
-                activeState_->second->setStateActive(true);
-
                 initialized_ = true;
                 timer_->cancel();
                 waitForServices();
