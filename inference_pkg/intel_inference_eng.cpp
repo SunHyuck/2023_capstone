@@ -300,7 +300,7 @@ namespace IntelInferenceEngine {
                 inferMsg.results.push_back(inferData);
             }
             // Send results to all subscribers.
-            RCLCPP_ERROR(inferenceNode->get_logger(), "Inference pub===================");
+            RCLCPP_INFO(inferenceNode->get_logger(), "Inference pub===================");
             resultPub_->publish(inferMsg);
         }
         catch (const std::exception &ex) {
