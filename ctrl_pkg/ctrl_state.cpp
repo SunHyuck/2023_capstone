@@ -26,8 +26,6 @@
 #include "deepracer_interfaces_pkg/srv/get_led_ctrl_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/nav_throttle_srv.hpp"
 
-int detected = 1;
-
 namespace
 {
     // Name of relavent services.
@@ -136,6 +134,7 @@ namespace SysCtrl
         {
             return;
         }
+        RCLCPP_ERROR(this->get_logger(), "AutoDriver Servo Called");
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
@@ -664,6 +663,7 @@ namespace SysCtrl
         {
             return;
         }
+        RCLCPP_ERROR(this->get_logger(), "DD Servo Called");
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
