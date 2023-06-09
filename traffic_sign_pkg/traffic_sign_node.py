@@ -179,9 +179,10 @@ class TrafficSignNode(Node):
                     ############################### 차량
                     elif coco_label == "car":
                         if (bounding_box[0]+bounding_box[2])//2>150:
-                            detected_signs.append("car_right",2.0,distance_approximation)
+                            detected_signs.append(("car_right",2.0,distance_approximation))
                         else:
-                            detected_signs.append("car_left",2.0,distance_approximation)
+                            detected_signs.append(("car_left",2.0,distance_approximation))
+
                     ###############################
                     else:
                         self.get_logger().info(f"No logic for label {coco_label}")
