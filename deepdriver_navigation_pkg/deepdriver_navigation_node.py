@@ -254,22 +254,22 @@ class TrafficNavigationNode(Node):
                 # If no object, clear the LED and continue driving.
                 if not closest_object:
                     self.update_led()
-                    self.update_driving_state(is_driving=True)
+                    self.update_driving_state(is_driving=False)
                     continue
 
                 # If object too far away, clear the LED and continue driving.
                 if closest_object.distance >= constants.DISTANCE_THRESHOLD:
                     self.update_led()
-                    self.update_driving_state(is_driving=True)
+                    self.update_driving_state(is_driving=False)
                     continue
 
                 # If object detected:
                 if closest_object.type == "person":
                     self.update_led(color="yellow", blinking=True)
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
                 elif closest_object.type == "stop sign":
                     self.update_led(color="red", blinking=True)
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
                 ############################### 차량
                 # elif closest_object.tpye =="car_left":
                 #     self.update_led(color="yellow", blinking=True)
@@ -283,21 +283,21 @@ class TrafficNavigationNode(Node):
                 elif closest_object.type == "traffic light":
                     self.update_led(color=closest_object.color)
                     self.update_driving_state(
-                        is_driving=closest_object.color == "green"
+                        is_driving = closest_object.color != "green"
                     )
                 else:
                     self.get_logger().error(
                         f"No logic for object type {closest_object.type}"
                     )
                     # Stop the car for safety reasons.
-                    self.update_driving_state(is_driving=False)
+                    self.update_driving_state(is_driving=True)
                     self.update_led()
 
         except Exception as ex:
             self.get_logger().error(f"Failed to process traffic sign input: {ex}")
 
             # Stop the car for safety reasons.
-            self.update_driving_state(is_driving=False)
+            self.update_driving_state(is_driving=True)
 
             # Stop the car
             msg = ServoCtrlMsg()
@@ -323,9 +323,8 @@ class TrafficNavigationNode(Node):
         ############################### 차량
 
         if self.is_driving:
-            return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
-        # No Action
-        return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+            return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
+        return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
 
     def main_loop(self):
         """Function which runs in a separate thread and decides the actions
