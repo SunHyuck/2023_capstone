@@ -26,6 +26,8 @@
 #include "deepracer_interfaces_pkg/srv/get_led_ctrl_srv.hpp"
 #include "deepracer_interfaces_pkg/srv/nav_throttle_srv.hpp"
 
+int detected = 1;
+
 namespace
 {
     // Name of relavent services.
@@ -130,10 +132,11 @@ namespace SysCtrl
 
     void AutoDriveCtrl::servoCB(const deepracer_interfaces_pkg::msg::ServoCtrlMsg::SharedPtr msg)
     {
-        if (!isActive_)
+        if (!isActive_ || detected)
         {
             return;
         }
+        RCLCPP_INFO(ctrlNode->get_logger(), "AutoDriver Servo Called");
         auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
         servoMsg.angle = msg->angle;
         servoMsg.throttle = msg->throttle;
@@ -662,10 +665,20 @@ namespace SysCtrl
         {
             return;
         }
-        auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
-        servoMsg.angle = msg->angle;
-        servoMsg.throttle = msg->throttle;
-        servoPub_->publish(std::move(servoMsg)); // Publish it along.
+        RCLCPP_INFO(ctrlNode->get_logger(), "DD Servo Called");
+
+        if (msg->angle ==0 && msg->throttle==0.7){
+            detected=0;
+            return;
+        }
+        else {
+            detected=1;
+            auto servoMsg = deepracer_interfaces_pkg::msg::ServoCtrlMsg();
+            servoMsg.angle = msg->angle;
+            servoMsg.throttle = msg->throttle;
+            servoPub_->publish(std::move(servoMsg)); // Publish it along.
+        }
+
     }
 
     bool DeepDriverDriveCtrl::loadModelReq(int requestSeqNum, std::string modelName, std::vector<int> modelMetadataSensors,
