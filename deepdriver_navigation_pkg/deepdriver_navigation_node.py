@@ -44,6 +44,8 @@ from deepracer_interfaces_pkg.msg import ServoCtrlMsg, TrafficMsg
 from deepracer_interfaces_pkg.srv import SetMaxSpeedSrv, SetLedCtrlSrv
 from deepdriver_navigation_pkg import constants, utils, control_utils
 
+is_left = False
+is_right = False
 
 class TrafficNavigationNode(Node):
     """Node responsible for deciding the action messages (servo control messages specifically angle
@@ -270,16 +272,17 @@ class TrafficNavigationNode(Node):
                 elif closest_object.type == "stop sign":
                     self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=False)
-                ############################### 차량
-                # elif closest_object.tpye =="car_left":
-                #     self.update_led(color="yellow", blinking=True)
-                #     self.update_driving_state(is_driving='left')
-                #    
-                # elif closest_object.tpye =="car_right":
-                #     self.update_led(color="yellow", blinking=True)
-                #     self.update_driving_state(is_driving='right')
-                #     
-                ###############################
+
+                elif closest_object.type =="car_left":
+                    self.update_led(color="yellow", blinking=True)
+                    self.update_driving_state(is_driving=False)
+                    is_left = True
+                   
+                elif closest_object.type =="car_right":
+                    self.update_led(color="yellow", blinking=True)
+                    self.update_driving_state(is_driving=False)
+                    is_right = True
+
                 elif closest_object.type == "traffic light":
                     self.update_led(color=closest_object.color)
                     self.update_driving_state(
@@ -313,17 +316,15 @@ class TrafficNavigationNode(Node):
 
     def plan_action(self, delta_x):
         # For now only drive straight ahead.
-
-        ############################### 차량
-        #if self.is_driving=='car_left':
-        #    return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
-        #elif self.is_driving =="car_right"
-        #    return constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
-        #elif로 변경
-        ############################### 차량
-
         if self.is_driving:
             return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
+        
+        if is_left:
+            is_left = False
+            return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
+        elif is_right:
+            is_right = False
+            return constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
         return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
 
     def main_loop(self):
