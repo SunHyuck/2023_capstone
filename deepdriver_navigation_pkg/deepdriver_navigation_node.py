@@ -267,19 +267,19 @@ class TrafficNavigationNode(Node):
 
                 # If object detected:
                 if closest_object.type == "person":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=False)
                 elif closest_object.type == "stop sign":
                     self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=False)
 
                 elif closest_object.type =="car_left":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="blue", blinking=True)
                     self.update_driving_state(is_driving=False)
                     is_left = True
                    
                 elif closest_object.type =="car_right":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="blue", blinking=True)
                     self.update_driving_state(is_driving=False)
                     is_right = True
 
