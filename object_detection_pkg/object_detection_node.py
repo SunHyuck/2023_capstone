@@ -185,8 +185,10 @@ class ObjectDetectionNode(Node):
 
                 # Read and postprocess output.
                 res = res[self.out_blob]
-                output_data = res[0][0]
-                
+                output_data = res[0][0][:5]
+                self.get_logger().info(
+                    f"output_data: {output_data}"
+                )
                 # Object to store infer results in.
                 infer_results_array = InferResultsArray()
                 infer_results_array.results = []  # List of InferResults objects.
@@ -284,8 +286,14 @@ class ObjectDetectionNode(Node):
                 # Publish inference results.
                 
                 if self.object_detected:
+                    self.get_logger().info(
+                        f"Detected"
+                    )
                     self.inference_result_publisher.publish(infer_results_array)
                 else:
+                    self.get_logger().info(
+                        f"Not Detected"
+                    )
                     self.image_publisher.publish(sensor_data)
                 self.get_logger().info(
                     f"Total object_detection execution time = {time.time() - start_time}"
