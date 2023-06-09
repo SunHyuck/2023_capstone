@@ -271,7 +271,7 @@ class TrafficNavigationNode(Node):
 
                 # If object detected:
                 if closest_object.type == "person":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=True)
                     self.action_category = constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
                 elif closest_object.type == "stop sign":
@@ -285,11 +285,11 @@ class TrafficNavigationNode(Node):
 
                 ############################### 차량
                 elif closest_object.type =="car_left":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=True)
                     self.action_category = constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
                 elif closest_object.type =="car_right":
-                    self.update_led(color="yellow", blinking=True)
+                    self.update_led(color="red", blinking=True)
                     self.update_driving_state(is_driving=True)
                     self.action_category = constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
                 ###############################   
