@@ -44,9 +44,6 @@ from deepracer_interfaces_pkg.msg import ServoCtrlMsg, TrafficMsg
 from deepracer_interfaces_pkg.srv import SetMaxSpeedSrv, SetLedCtrlSrv
 from deepdriver_navigation_pkg import constants, utils, control_utils
 
-is_left = False
-is_right = False
-
 class TrafficNavigationNode(Node):
     """Node responsible for deciding the action messages (servo control messages specifically angle
     and throttle) to be sent out using the detection deltas from object_detection_node.
@@ -96,7 +93,8 @@ class TrafficNavigationNode(Node):
 
         # Boolean to control stop/start state.
         self.is_driving = True
-
+        self.is_left = False
+        self.is_right = False
         # Default maximum speed percentage (updated as per request using service call).
         self.max_speed_pct = constants.MAX_SPEED_PCT
 
@@ -276,12 +274,12 @@ class TrafficNavigationNode(Node):
                 elif closest_object.type =="car_left":
                     self.update_led(color="blue", blinking=True)
                     self.update_driving_state(is_driving=False)
-                    is_left = True
+                    self.is_left = True
                    
                 elif closest_object.type =="car_right":
                     self.update_led(color="blue", blinking=True)
                     self.update_driving_state(is_driving=False)
-                    is_right = True
+                    self.is_right = True
 
                 elif closest_object.type == "traffic light":
                     self.update_led(color=closest_object.color)
@@ -319,11 +317,11 @@ class TrafficNavigationNode(Node):
         if self.is_driving:
             return constants.ACTION_SPACE[2][constants.ActionSpaceKeys.CATEGORY]
         
-        if is_left:
-            is_left = False
+        if self.is_left:
+            self.is_left = False
             return constants.ACTION_SPACE[6][constants.ActionSpaceKeys.CATEGORY]
-        elif is_right:
-            is_right = False
+        elif self.is_right:
+            self.is_right = False
             return constants.ACTION_SPACE[4][constants.ActionSpaceKeys.CATEGORY]
         return constants.ACTION_SPACE[1][constants.ActionSpaceKeys.CATEGORY]
 
