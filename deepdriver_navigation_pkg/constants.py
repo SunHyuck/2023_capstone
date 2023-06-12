@@ -50,7 +50,7 @@ class ActionValues:
     the angle and throttle.
     """
 
-    FORWARD = 0.4
+    FORWARD = 0.3
     FAST_LEFT = 1.0
     SLOW_LEFT = 0.9
     FAST_RIGHT = -1.0

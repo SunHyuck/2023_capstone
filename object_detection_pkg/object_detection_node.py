@@ -186,9 +186,9 @@ class ObjectDetectionNode(Node):
                 # Read and postprocess output.
                 res = res[self.out_blob]
                 output_data = res[0][0][:5]
-                self.get_logger().info(
-                    f"output_data: {output_data}"
-                )
+                # self.get_logger().info(
+                #     f"output_data: {output_data}"
+                # )
                 # Object to store infer results in.
                 infer_results_array = InferResultsArray()
                 infer_results_array.results = []  # List of InferResults objects.
